@@ -1,0 +1,10 @@
+Package: dataCleaning
+Type: Package
+Title: Query functions
+Version: 1.0
+Date: 2017-05-09
+Author: Peter Dutton
+Maintainer: Peter Dutton <peter.dutton@ndorms.ox.ac.uk>
+Description: contains so useful utility functions for R
+License: None
+RoxygenNote: 5.0.1
