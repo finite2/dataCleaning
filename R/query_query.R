@@ -30,6 +30,17 @@ query = function(q, data, validation, CRF, mess, parameters = NULL, patid = "pat
   mod = as.bigz("900000000000000046043660025881") # nextprime(10^30 - 10^29)
   nme = names(data)
 
+  checkUnique = unique(data[,c(patid, repeatLine1, repeatLine2)])
+  if(!is.null(dim(checkUnique))){
+    un = dim(checkUnique)[1]
+  } else {
+    un = length(checkUnique)
+  }
+
+  if(un != dim(data)[1]){
+    warning("patid, repeatLine1 and repeatLine2 do not uniquely identify rows in the data. Add column names to repeatLine1 and repeatLine2 to identify each row uniquely to avoid missing queries.")
+  }
+
   if(dim(data)[1] > 0){
     ev = if(reject){
       sapply(with(data,eval(validation)), function(x) isTRUE(x))
@@ -61,10 +72,10 @@ query = function(q, data, validation, CRF, mess, parameters = NULL, patid = "pat
             counter[2] = counter[2] + 1
             lineNumber = which(code == q$q$identifier)
 
-            if(q$q$queryRun[lineNumber] != q$queryRun) {
-              q$q$STATSresolved[lineNumber] = "No"
-              q$q$firstQuery[lineNumber] = "No"
 
+              q$q$STATSresolved[lineNumber] = "No"
+            if(q$q$queryRun[lineNumber] != q$queryRun) {
+              q$q$firstQuery[lineNumber] = "No"
             }
             q$q$queryRun[lineNumber] = q$queryRun
           }
@@ -73,7 +84,7 @@ query = function(q, data, validation, CRF, mess, parameters = NULL, patid = "pat
 
         if(a == 0){
           counter[1] = counter[1] + 1
-          q$q[dm[1]+1,] <- c(dm[1]+1, code, q$queryRun, dsub[i,patid], CRF, ifelse(is.null(repeatLine1),"1",dsub[i,repeatLine1]), ifelse(is.null(repeatLine2),"1",dsub[i,repeatLine2]), "Yes", thisMessage, "", "","No")
+          q$q[dm[1]+1,] <- c(dm[1]+1, code, q$queryRun, dsub[i,patid], CRF, ifelse(is.null(repeatLine1),"",dsub[i,repeatLine1]), ifelse(is.null(repeatLine2),"",dsub[i,repeatLine2]), "Yes", thisMessage, "", "","No")
         }
       }
       if(prnt){
@@ -117,7 +128,7 @@ queryQ = function(){
   # print(num)
   big = as.bigz(paste0(1,num))
   modulus(big) = as.bigz("900000000000000046043660025881")
-  print(big)
+  # print(big)
   # big = as.bigz(bn , mod = "900000000000000046043660025881") # mod = nextprime(10^30 - 10^29)
   return(as.character(numerator(big)))
 }
@@ -207,10 +218,10 @@ querySave = function(wb, q, file) {
 
   unresolved = q$q[q$q$STATSresolved == "No",]
 
-  p1 = which(!unresolved$resolved %in% c("Yes","No",NA))
-  p2 = which(is.na(unresolved$resolved))
-  p3 = which(!unresolved$resolved %in% c("No"))
-  p4 = which(!unresolved$resolved %in% c("Yes"))
+  p1 = which(is.na(unresolved$resolved) | unresolved$resolved == "" )
+  p2 = which(!unresolved$resolved %in% c("Yes","No",NA,""))
+  p3 = which(unresolved$resolved %in% c("No"))
+  p4 = which(unresolved$resolved %in% c("Yes"))
 
   unresolved = unresolved[c(p1,p2,p3,p4),]
 

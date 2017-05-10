@@ -7,4 +7,7 @@ Author: Peter Dutton
 Maintainer: Peter Dutton <peter.dutton@ndorms.ox.ac.uk>
 Description: contains so useful utility functions for R
 License: None
+Imports:
+    gmp,
+    openxlsx
 RoxygenNote: 5.0.1
