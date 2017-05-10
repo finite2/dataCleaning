@@ -132,6 +132,10 @@ queryQ = function(){
 #' @param wb The workbook object created by queryLoad
 #' @param q The query object with all queries checked and updated
 #'
+#' @details
+#' As a minimum the file to load should contain an "Instructions" and an "Initials" worksheet.
+#' The database has 12 columns: "id","identifier","queryRun","patid","CRF","repeatLine1","repeatLine2","firstQuery","STATScomments","comments","resolved","STATSresolved" these are checked by queryLoad to ensure there will be no errors later.
+#'
 #' @export queryLoad
 queryLoad = function(file, queryRun = 1) {
 
@@ -149,27 +153,38 @@ queryLoad = function(file, queryRun = 1) {
 
   try({
     previous = readWorkbook(xlsxFile = file, sheet = "Previous")
-  })
+  }, silent = TRUE)
   try({
     current = readWorkbook(xlsxFile = file, sheet = "Current")
-  })
+  }, silent = TRUE)
 
 
-
+  coln = c("id","identifier","queryRun","patid","CRF","repeatLine1","repeatLine2","firstQuery","STATScomments","comments","resolved","STATSresolved")
   if(is.null(previous)){
-    coln = c("id","identifier","queryRun","patid","CRF","repeatLine1","repeatLine2","firstQuery","STATScomments","comments","resolved","STATSresolved")
     previous = data.frame(matrix("",nrow=0,ncol=length(coln)), stringsAsFactors = FALSE)
     names(previous) = coln
   }
 
   if(is.null(current)){
-    coln = c("id","identifier","queryRun","patid","CRF","repeatLine1","repeatLine2","firstQuery","STATScomments","comments","resolved","STATSresolved")
     current = data.frame(matrix("",nrow=0,ncol=length(coln)), stringsAsFactors = FALSE)
     names(current) = coln
   }
 
-  message("Rows in previous queries ",dim(previous)[1])
-  message("Rows in current queries ",dim(current)[1])
+  if(dim(current)[2] != 12){
+    warning("Current spreadsheet is not the correct 12 columns long")
+  }
+  if(sum(names(previous) == coln) != 12) {
+    warning("Not all column names match in Current spreadsheet")
+  }
+  if(dim(previous)[2] != 12){
+    warning("Previous spreadsheet is not the correct 12 columns long")
+  }
+  if(sum(names(previous) == coln) != 12) {
+    warning("Not all column names match in Previous spreadsheet")
+  }
+
+  message("Rows in Previous queries spreadsheet ",dim(previous)[1])
+  message("Rows in Current queries spreadsheet ",dim(current)[1])
 
   dta = rbind(previous, current)
 

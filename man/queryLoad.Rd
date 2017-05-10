@@ -21,6 +21,10 @@ querySave(wb, q, file)
 \description{
 Load and Save the queries from an excel workbook.
 }
+\details{
+As a minimum the file to load should contain an "Instructions" and an "Initials" worksheet.
+The database has 12 columns: "id","identifier","queryRun","patid","CRF","repeatLine1","repeatLine2","firstQuery","STATScomments","comments","resolved","STATSresolved" these are checked by queryLoad to ensure there will be no errors later.
+}
 \section{Functions}{
 \itemize{
 \item \code{querySave}: Save the query object to excel
